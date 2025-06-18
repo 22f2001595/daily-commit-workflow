@@ -2,26 +2,27 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: '15 4 * * *'
+    - cron: "25 23 * * *"  # runs daily at 11:25 PM UTC
   workflow_dispatch:
 
 jobs:
-  commit:
+  commit-job:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # ✅ allows push access
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Commit step - 22f2001595@ds.study.iitm.ac.in
+      - name: Add timestamp to file (22f2001595@ds.study.iitm.ac.in)
         run: |
-          echo "TDSFU Daily run: $(date -u) TDSFU" >> daily-log.txt
+          echo "Last run at: $(date -u)" >> daily.txt
 
-      - name: Git Commit and Push
+      - name: Commit and Push Changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add daily-log.txt
-          git commit -m "Auto commit at $(date -u)" || echo "No changes to commit"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add daily.txt
+          git commit -m "Daily commit on $(date -u)" || echo "No changes to commit"
           git push
